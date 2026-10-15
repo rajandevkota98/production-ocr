@@ -1,0 +1,13 @@
+{
+  "id": "doc_084",
+  "type": "formula",
+  "file": "doc_084_formula.png",
+  "ground_truth_formulas": [
+    "H(X) = - sum_{i=1}^{n} P(x_i) * log2(P(x_i))"
+  ],
+  "expected_terms": [
+    "H(X)",
+    "sum",
+    "log2"
+  ]
+}

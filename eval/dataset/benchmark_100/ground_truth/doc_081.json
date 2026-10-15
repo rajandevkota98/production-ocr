@@ -1,0 +1,13 @@
+{
+  "id": "doc_081",
+  "type": "formula",
+  "file": "doc_081_formula.png",
+  "ground_truth_formulas": [
+    "L(w) = (1/N) * sum_{i=1}^{N} (y_i - f(x_i; w))^2 + lambda * ||w||^2"
+  ],
+  "expected_terms": [
+    "L(w)",
+    "sum",
+    "lambda"
+  ]
+}

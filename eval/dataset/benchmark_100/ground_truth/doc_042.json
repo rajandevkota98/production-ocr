@@ -1,0 +1,38 @@
+{
+  "id": "doc_042",
+  "type": "table",
+  "file": "doc_042_table.png",
+  "ground_truth_markdown": "| Business Segment | Fiscal Q1 ($M) | Fiscal Q2 ($M) | YoY Growth |\n|---|---|---|---|\n| Storage Engine | $38.5 | $42.1 | +9.4% |\n| API Gateway Tier | $45.0 | $56.2 | +24.9% |\n| Security Shield | $19.4 | $26.8 | +38.1% |\n| Professional Support | $28.0 | $31.5 | +12.5% |",
+  "table_cells": [
+    [
+      "Business Segment",
+      "Fiscal Q1 ($M)",
+      "Fiscal Q2 ($M)",
+      "YoY Growth"
+    ],
+    [
+      "Storage Engine",
+      "$38.5",
+      "$42.1",
+      "+9.4%"
+    ],
+    [
+      "API Gateway Tier",
+      "$45.0",
+      "$56.2",
+      "+24.9%"
+    ],
+    [
+      "Security Shield",
+      "$19.4",
+      "$26.8",
+      "+38.1%"
+    ],
+    [
+      "Professional Support",
+      "$28.0",
+      "$31.5",
+      "+12.5%"
+    ]
+  ]
+}

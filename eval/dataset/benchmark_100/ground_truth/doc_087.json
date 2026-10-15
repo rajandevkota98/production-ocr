@@ -1,0 +1,15 @@
+{
+  "id": "doc_087",
+  "type": "formula",
+  "file": "doc_087_formula.png",
+  "ground_truth_formulas": [
+    "p(x | mu, sigma) = (1 / (sigma * sqrt(2*pi))) * exp(-(x - mu)^2 / (2*sigma^2))"
+  ],
+  "expected_terms": [
+    "sigma",
+    "sqrt",
+    "pi",
+    "exp",
+    "mu"
+  ]
+}

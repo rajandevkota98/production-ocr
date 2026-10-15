@@ -1,0 +1,22 @@
+{
+  "id": "doc_003",
+  "type": "multi_column",
+  "file": "doc_003_multicolumn.png",
+  "ground_truth_text": "Document #003: Technical Analysis of Financial Risk Modeling\n\n1. Primary Architecture Overview\nPortfolio value-at-risk calculates maximum expected losses.\nMonte Carlo simulations stress test extreme market events.\nKey benchmark targets high throughput under load.\nSystem latency remains sub-50ms at peak traffic.\n\n2. Implementation & Empirical Results\nLiquidity risk frameworks monitor capital adequacy ratios.\nCredit default swap spreads indicate counterparty solvency.\nDecoupled components scale horizontally on demand.\nEmpirical verification confirms zero data loss.",
+  "reading_blocks": [
+    [
+      "1. Primary Architecture Overview",
+      "Portfolio value-at-risk calculates maximum expected losses.",
+      "Monte Carlo simulations stress test extreme market events.",
+      "Key benchmark targets high throughput under load.",
+      "System latency remains sub-50ms at peak traffic."
+    ],
+    [
+      "2. Implementation & Empirical Results",
+      "Liquidity risk frameworks monitor capital adequacy ratios.",
+      "Credit default swap spreads indicate counterparty solvency.",
+      "Decoupled components scale horizontally on demand.",
+      "Empirical verification confirms zero data loss."
+    ]
+  ]
+}

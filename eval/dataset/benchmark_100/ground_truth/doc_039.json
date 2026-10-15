@@ -1,0 +1,22 @@
+{
+  "id": "doc_039",
+  "type": "multi_column",
+  "file": "doc_039_multicolumn.png",
+  "ground_truth_text": "Document #039: Technical Analysis of Healthcare Informatics\n\n1. Primary Architecture Overview\nElectronic health record standards ensure patient data privacy.\nFederated learning enables cross-hospital diagnostic models.\nKey benchmark targets high throughput under load.\nSystem latency remains sub-50ms at peak traffic.\n\n2. Implementation & Empirical Results\nClinical NLP extracts structured terms from physician notes.\nAudit trails ensure strict compliance with HIPAA mandates.\nDecoupled components scale horizontally on demand.\nEmpirical verification confirms zero data loss.",
+  "reading_blocks": [
+    [
+      "1. Primary Architecture Overview",
+      "Electronic health record standards ensure patient data privacy.",
+      "Federated learning enables cross-hospital diagnostic models.",
+      "Key benchmark targets high throughput under load.",
+      "System latency remains sub-50ms at peak traffic."
+    ],
+    [
+      "2. Implementation & Empirical Results",
+      "Clinical NLP extracts structured terms from physician notes.",
+      "Audit trails ensure strict compliance with HIPAA mandates.",
+      "Decoupled components scale horizontally on demand.",
+      "Empirical verification confirms zero data loss."
+    ]
+  ]
+}

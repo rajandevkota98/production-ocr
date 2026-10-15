@@ -1,0 +1,22 @@
+{
+  "id": "doc_007",
+  "type": "multi_column",
+  "file": "doc_007_multicolumn.png",
+  "ground_truth_text": "Document #007: Technical Analysis of Machine Learning Operations\n\n1. Primary Architecture Overview\nContinuous model training pipelines validate data drift.\nFeature store caching reduces latency for real-time inference.\nKey benchmark targets high throughput under load.\nSystem latency remains sub-50ms at peak traffic.\n\n2. Implementation & Empirical Results\nAutomated model registry tracks model weights and lineage.\nDrift detection alerts trigger automated retrain workflows.\nDecoupled components scale horizontally on demand.\nEmpirical verification confirms zero data loss.",
+  "reading_blocks": [
+    [
+      "1. Primary Architecture Overview",
+      "Continuous model training pipelines validate data drift.",
+      "Feature store caching reduces latency for real-time inference.",
+      "Key benchmark targets high throughput under load.",
+      "System latency remains sub-50ms at peak traffic."
+    ],
+    [
+      "2. Implementation & Empirical Results",
+      "Automated model registry tracks model weights and lineage.",
+      "Drift detection alerts trigger automated retrain workflows.",
+      "Decoupled components scale horizontally on demand.",
+      "Empirical verification confirms zero data loss."
+    ]
+  ]
+}

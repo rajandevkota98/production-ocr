@@ -1,0 +1,22 @@
+{
+  "id": "doc_035",
+  "type": "multi_column",
+  "file": "doc_035_multicolumn.png",
+  "ground_truth_text": "Document #035: Technical Analysis of Enterprise Cybersecurity\n\n1. Primary Architecture Overview\nZero-trust network architecture enforces identity verification.\nMicrosegmentation confines lateral movement during breach.\nKey benchmark targets high throughput under load.\nSystem latency remains sub-50ms at peak traffic.\n\n2. Implementation & Empirical Results\nAutomated patch management reduces vulnerable software surfaces.\nEncrypted transport layers protect sensitive payload transit.\nDecoupled components scale horizontally on demand.\nEmpirical verification confirms zero data loss.",
+  "reading_blocks": [
+    [
+      "1. Primary Architecture Overview",
+      "Zero-trust network architecture enforces identity verification.",
+      "Microsegmentation confines lateral movement during breach.",
+      "Key benchmark targets high throughput under load.",
+      "System latency remains sub-50ms at peak traffic."
+    ],
+    [
+      "2. Implementation & Empirical Results",
+      "Automated patch management reduces vulnerable software surfaces.",
+      "Encrypted transport layers protect sensitive payload transit.",
+      "Decoupled components scale horizontally on demand.",
+      "Empirical verification confirms zero data loss."
+    ]
+  ]
+}

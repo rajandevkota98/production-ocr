@@ -1,0 +1,13 @@
+{
+  "id": "doc_086",
+  "type": "formula",
+  "file": "doc_086_formula.png",
+  "ground_truth_formulas": [
+    "P(y=k | x) = exp(z_k) / sum_{j=1}^{C} exp(z_j)"
+  ],
+  "expected_terms": [
+    "Softmax",
+    "exp",
+    "sum"
+  ]
+}

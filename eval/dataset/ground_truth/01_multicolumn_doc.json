@@ -1,0 +1,26 @@
+{
+  "id": "01_multicolumn_doc",
+  "category": "multi_column",
+  "description": "Two-column technical paper testing reading-order preservation vs horizontal line interleaving",
+  "ground_truth_text": "Empirical Evaluation of Document Understanding Architectures\n\n1. Introduction & Motivation\nDeep visual document understanding requires robust layout awareness.\nTraditional single-shot OCR systems scan text lines strictly horizontally.\nOn multi-column layouts, horizontal scans interleave distinct columns.\nThis results in fragmented sentences and jumbled semantic meaning.\nEnterprise search and LLM retrieval pipelines suffer catastrophic failure.\nTherefore, layout-first segmentation is mandatory for multi-column text.\n\n2. Two-Stage Vision Pipeline\nOur two-stage approach decouples layout segmentation from OCR.\nStage 1 utilizes PP-DocLayoutV3 to detect column bounding boxes.\nStage 2 dispatches cropped semantic regions to a specialized SLM.\nText is parsed sequentially down column 1 before traversing column 2.\nThis preserves natural human reading order with 100% structural fidelity.\nExtracted markdown cleanly mirrors original document intent and syntax.",
+  "ground_truth_reading_blocks": [
+    [
+      "1. Introduction & Motivation",
+      "Deep visual document understanding requires robust layout awareness.",
+      "Traditional single-shot OCR systems scan text lines strictly horizontally.",
+      "On multi-column layouts, horizontal scans interleave distinct columns.",
+      "This results in fragmented sentences and jumbled semantic meaning.",
+      "Enterprise search and LLM retrieval pipelines suffer catastrophic failure.",
+      "Therefore, layout-first segmentation is mandatory for multi-column text."
+    ],
+    [
+      "2. Two-Stage Vision Pipeline",
+      "Our two-stage approach decouples layout segmentation from OCR.",
+      "Stage 1 utilizes PP-DocLayoutV3 to detect column bounding boxes.",
+      "Stage 2 dispatches cropped semantic regions to a specialized SLM.",
+      "Text is parsed sequentially down column 1 before traversing column 2.",
+      "This preserves natural human reading order with 100% structural fidelity.",
+      "Extracted markdown cleanly mirrors original document intent and syntax."
+    ]
+  ]
+}

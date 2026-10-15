@@ -1,0 +1,19 @@
+{
+  "id": "03_scientific_formula",
+  "category": "formula",
+  "description": "Mathematical formula document testing LaTeX syntax fidelity vs garbled ASCII text",
+  "ground_truth_formulas": [
+    "L(\\theta) = \\frac{1}{N} \\sum_{i=1}^{N} \\mathcal{L}_{ce}(f(x_i; \\theta), y_i) + \\lambda \\|\\theta\\|_2^2",
+    "p(x \\mid \\mu, \\sigma^2) = \\frac{1}{\\sigma \\sqrt{2\\pi}} \\exp\\left( - \\frac{(x - \\mu)^2}{2\\sigma^2} \\right)"
+  ],
+  "expected_terms": [
+    "L(theta)",
+    "sum",
+    "lambda",
+    "exp",
+    "sqrt",
+    "sigma",
+    "pi",
+    "mu"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "02_financial_table",
+  "category": "table",
+  "description": "Borderless financial table testing cell alignment, column association, and markdown structure",
+  "ground_truth_markdown": "| Financial Metric | Q1 2024 ($M) | Q2 2024 ($M) | YoY Growth (%) |\n|---|---|---|---|\n| Cloud Infrastructure | $142.5 | $189.2 | +32.8% |\n| Enterprise AI Licensing | $88.4 | $124.1 | +40.4% |\n| Professional Services | $34.1 | $39.5 | +15.8% |\n| Operating Expenses | $64.2 | $71.5 | +11.3% |\n| Net Operating Income | $200.8 | $281.3 | +40.1% |",
+  "table_cells": [
+    [
+      "Financial Metric",
+      "Q1 2024 ($M)",
+      "Q2 2024 ($M)",
+      "YoY Growth (%)"
+    ],
+    [
+      "Cloud Infrastructure",
+      "$142.5",
+      "$189.2",
+      "+32.8%"
+    ],
+    [
+      "Enterprise AI Licensing",
+      "$88.4",
+      "$124.1",
+      "+40.4%"
+    ],
+    [
+      "Professional Services",
+      "$34.1",
+      "$39.5",
+      "+15.8%"
+    ],
+    [
+      "Operating Expenses",
+      "$64.2",
+      "$71.5",
+      "+11.3%"
+    ],
+    [
+      "Net Operating Income",
+      "$200.8",
+      "$281.3",
+      "+40.1%"
+    ]
+  ]
+}

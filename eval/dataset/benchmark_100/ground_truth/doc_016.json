@@ -1,0 +1,22 @@
+{
+  "id": "doc_016",
+  "type": "multi_column",
+  "file": "doc_016_multicolumn.png",
+  "ground_truth_text": "Document #016: Technical Analysis of Distributed Systems\n\n1. Primary Architecture Overview\nCloud scalability requires autonomous microservices architecture.\nFailure recovery protocols must execute without manual intervention.\nKey benchmark targets high throughput under load.\nSystem latency remains sub-50ms at peak traffic.\n\n2. Implementation & Empirical Results\nConsensus algorithms provide atomic state across nodes.\nNetwork partitions trigger fallback election mechanisms.\nDecoupled components scale horizontally on demand.\nEmpirical verification confirms zero data loss.",
+  "reading_blocks": [
+    [
+      "1. Primary Architecture Overview",
+      "Cloud scalability requires autonomous microservices architecture.",
+      "Failure recovery protocols must execute without manual intervention.",
+      "Key benchmark targets high throughput under load.",
+      "System latency remains sub-50ms at peak traffic."
+    ],
+    [
+      "2. Implementation & Empirical Results",
+      "Consensus algorithms provide atomic state across nodes.",
+      "Network partitions trigger fallback election mechanisms.",
+      "Decoupled components scale horizontally on demand.",
+      "Empirical verification confirms zero data loss."
+    ]
+  ]
+}
