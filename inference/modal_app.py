@@ -6,18 +6,17 @@ import modal
 
 app = modal.App("production-ocr")
 
-# Shared storage volume for model checkpoints
 models_volume = modal.Volume.from_name("ocr-models", create_if_missing=True)
 
-# Image definition with required CV & ML dependencies
+# Image definition with required system and Python OCR libraries
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .apt_install("libgl1-mesa-glx", "libglib2.0-0", "poppler-utils")
+    .apt_install("libgl1-mesa-glx", "libglib2.0-0", "poppler-utils", "tesseract-ocr")
     .pip_install(
+        "fastapi[standard]>=0.110.0",
         "torch>=2.2.0",
         "transformers>=4.40.0",
-        "accelerate>=0.28.0",
-        "vllm>=0.6.0",
+        "pytesseract>=0.3.10",
         "redis>=5.0.0",
         "loguru>=0.7.2",
         "pdf2image>=1.17.0",
@@ -44,39 +43,75 @@ PROMPTS = {
 )
 def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
     """
-    Stage 1: PP-DocLayoutV3 on lightweight T4 GPU.
-    Performs rasterization, layout detection, and semantic region segmentation.
+    Stage 1: Layout & Text Extraction on T4 GPU.
+    Performs block segmentation, bounding box extraction, and OCR.
     """
     import fitz  # PyMuPDF
+    import pytesseract
     from PIL import Image
 
-    pages = []
-    if extension.lower() == "pdf":
-        doc = fitz.open(stream=file_bytes, filetype="pdf")
-        for page_index in range(len(doc)):
-            page = doc[page_index]
-            pix = page.get_pixmap(dpi=150)
-            img = Image.open(io.BytesIO(pix.tobytes("png")))
-            pages.append(img)
-    else:
-        img = Image.open(io.BytesIO(file_bytes))
-        pages.append(img)
-
     regions_to_process = []
-    # Segment pages into content regions
-    for page_idx, page_img in enumerate(pages):
-        width, height = page_img.size
-        # Bounding box coordinates normalized [xmin, ymin, xmax, ymax]
+    total_pages = 1
+
+    try:
+        if extension.lower() == "pdf":
+            doc = fitz.open(stream=file_bytes, filetype="pdf")
+            total_pages = len(doc)
+            
+            for page_idx in range(len(doc)):
+                page = doc[page_idx]
+                blocks = page.get_text("blocks")
+                page_text_found = False
+
+                for b in blocks:
+                    # b: (x0, y0, x1, y1, text, block_no, block_type)
+                    x0, y0, x1, y1, text, block_no, b_type = b
+                    cleaned = text.strip()
+                    if cleaned:
+                        page_text_found = True
+                        regions_to_process.append({
+                            "page": page_idx + 1,
+                            "label": "table" if "\t" in cleaned or "|" in cleaned else "text",
+                            "bbox": [round(x0), round(y0), round(x1), round(y1)],
+                            "content": cleaned,
+                        })
+
+                # If scanned PDF with no text layer, rasterize and run OCR
+                if not page_text_found:
+                    pix = page.get_pixmap(dpi=150)
+                    img = Image.open(io.BytesIO(pix.tobytes("png")))
+                    ocr_text = pytesseract.image_to_string(img).strip()
+                    if ocr_text:
+                        regions_to_process.append({
+                            "page": page_idx + 1,
+                            "label": "text",
+                            "bbox": [0, 0, img.width, img.height],
+                            "content": ocr_text,
+                        })
+        else:
+            # Single image OCR
+            img = Image.open(io.BytesIO(file_bytes))
+            ocr_text = pytesseract.image_to_string(img).strip()
+            if not ocr_text:
+                ocr_text = "No readable text detected in image."
+            
+            regions_to_process.append({
+                "page": 1,
+                "label": "text",
+                "bbox": [0, 0, img.width, img.height],
+                "content": ocr_text,
+            })
+
+    except Exception as e:
         regions_to_process.append({
-            "page": page_idx + 1,
-            "label": "text",
-            "bbox": [0, 0, width, height],
-            "prompt": PROMPTS["text"],
-            "image_bytes": file_bytes if extension != "pdf" else None,
+            "page": 1,
+            "label": "error",
+            "bbox": [],
+            "content": f"Processing error: {str(e)}",
         })
 
     return {
-        "total_pages": len(pages),
+        "total_pages": total_pages,
         "regions": regions_to_process,
         "status": "layout_complete",
     }
@@ -90,25 +125,28 @@ def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
 )
 def transcribe_crops(crops: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Stage 2: Qwen 3.5 4B SLM via vLLM on A10G / A100.
-    Transcribes crops using continuous batching and targeted prompts.
+    Stage 2: Formatting and Structured Markdown Assembly.
     """
     results = []
-    for crop in crops:
-        label = crop.get("label", "text")
-        prompt = crop.get("prompt", PROMPTS["text"])
-        
-        # Generative recognition output
-        results.append({
-            "page": crop.get("page", 1),
-            "label": label,
-            "bbox": crop.get("bbox", []),
-            "content": f"[Transcribed content for {label}]",
-        })
+    markdown_lines = []
 
-    markdown_output = "\n\n".join([r["content"] for r in results])
+    for crop in crops:
+        content = crop.get("content", "").strip()
+        label = crop.get("label", "text")
+        page = crop.get("page", 1)
+
+        if content:
+            results.append({
+                "page": page,
+                "label": label,
+                "bbox": crop.get("bbox", []),
+                "content": content,
+            })
+            markdown_lines.append(content)
+
+    final_markdown = "\n\n".join(markdown_lines) if markdown_lines else "No text recognized."
     return {
-        "markdown": markdown_output,
+        "markdown": final_markdown,
         "layout": {"regions": results},
         "status": "done",
     }
@@ -117,7 +155,7 @@ def transcribe_crops(crops: List[Dict[str, Any]]) -> Dict[str, Any]:
     image=image,
     timeout=600,
 )
-@modal.web_endpoint(method="POST")
+@modal.fastapi_endpoint(method="POST")
 def process_document(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
     Unified HTTP Webhook for Hugging Face Spaces Gateway.
@@ -127,11 +165,11 @@ def process_document(payload: Dict[str, Any]) -> Dict[str, Any]:
     extension = payload.get("extension", "pdf")
     file_bytes = base64.b64decode(raw_b64)
 
-    # 1. Run Layout Detection on T4
+    # 1. Run Layout & Text Extraction on T4
     layout_result = parse_layout.remote(file_bytes, extension)
     regions = layout_result.get("regions", [])
 
-    # 2. Run SLM Transcription on A10G
+    # 2. Assemble Structured Markdown Output
     ocr_result = transcribe_crops.remote(regions)
 
     return {
