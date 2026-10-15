@@ -1,9 +1,10 @@
 modal>=0.63.0
-torch>=2.2.0
+vllm>=0.6.3
+torch>=2.4.0
 transformers>=4.45.0
 qwen-vl-utils>=0.0.8
 accelerate>=0.30.0
-rapid_layout>=0.1.4
+rapid_layout>=1.2.1
 rapidocr_onnxruntime>=1.4.0
 redis>=5.0.0
 loguru>=0.7.2
@@ -12,3 +13,4 @@ PyMuPDF>=1.24.0
 Pillow>=10.2.0
 httpx>=0.27.0
 pydantic>=2.0.0
+fastapi[standard]>=0.110.0
