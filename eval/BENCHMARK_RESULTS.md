@@ -15,7 +15,7 @@ Enterprise document workflows frequently suffer from severe failure modes when u
 2. **Tabular Fragmentation**: Complex and borderless financial tables are flattened into unstructured word dumps, destroying row-column coordinates.
 3. **Symbolic Hallucination**: Mathematical formulas and specialized notation are corrupted into illegible ASCII/Unicode characters.
 
-Our **Two-Stage Visual Document Understanding (VDU)** pipeline addresses this by decoupling **Stage 1 Layout Parsing** (PP-DocLayoutV3 on T4 GPU) from **Stage 2 Multimodal Generative Recognition** (Qwen 3.5 SLM on A10G GPU).
+Our **Two-Stage Visual Document Understanding (VDU)** pipeline addresses this by decoupling **Stage 1 Layout Parsing** (PP-DocLayoutV3 on T4 GPU) from **Stage 2 Multimodal Generative Recognition** (Qwen2-VL-2B-Instruct on vLLM on A10G GPU).
 
 ### Key Statistical Findings Across N=100 Documents
 - **Multi-Column Reading Order**: Two-Stage achieves a Kendall's $\tau$ rank correlation of **0.734** vs. **0.486** on Single-Shot baseline (+51% improvement in sequence coherence).
