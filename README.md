@@ -10,7 +10,7 @@ The **Production OCR Platform** combines deterministic layout analysis with gene
 
 ```mermaid
 flowchart LR
-    Client(["Client / AI Agent"]) -->|POST /process| Gateway["Hugging Face Spaces (Free CPU)\n• 2 vCPU, 16 GB RAM (No Card)\n• Port 7860 Gateway"]
+    Client(["Client / AI Agent"]) -->|POST /process| Gateway["High-Concurrency Ingest Gateway\n• Rust (Axum) or Python (FastAPI)\n• 2 vCPU, 16 GB RAM (HF Spaces)\n• 10MB limit & atomic Redis queueing"]
     Gateway --> Redis[("Upstash Redis\n• Free Task Queue")]
     Redis --> Worker["Modal Serverless GPU\n• Stage 1: PP-DocLayoutV3 (T4)\n• Stage 2: Qwen 3.5 4B (A10G/A100)"]
     Worker --> Redis
@@ -19,9 +19,10 @@ flowchart LR
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Gateways
 
-- **Ingestion Gateway (`gateway/`)**: FastAPI application providing file validation, base64 payload packaging, and task management. Configured for Hugging Face Spaces (port `7860`).
+- **Rust Ingestion Gateway (`gateway-rust/`)**: High-concurrency **Rust (Axum)** gateway with `tokio` async runtime, `tower-http` 10MB body limiting, atomic Redis `HSET` transactions, and `cargo-chef` Alpine builds.
+- **Python Ingestion Gateway (`gateway/`)**: Lightweight **FastAPI** gateway with custom exception hierarchies and structured logging.
 - **Asynchronous Worker (`worker/`)**: Dynamic batching collector (`100ms` window, `max 4` batch) with zero-copy shared memory (`/dev/shm`) buffer transfer.
 - **Serverless GPU Inference (`inference/`)**: Modal application coordinating `PP-DocLayoutV3` on T4 GPUs and `Qwen 3.5 4B` on A10G/A100 GPUs with scale-to-zero economics.
 - **Agent Tooling (`mcp/`)**: FastMCP server enabling AI assistants (Claude Code, Antigravity) to invoke document parsing natively.
@@ -40,7 +41,7 @@ make test
 make up
 ```
 
-The gateway will be available at `http://localhost:7860`.
+The Python gateway will be available at `http://localhost:7860`, and the Rust gateway at `http://localhost:5000`.
 
 ### 3. Deploy Serverless GPU Layer to Modal
 ```bash
