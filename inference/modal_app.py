@@ -9,31 +9,40 @@ app = modal.App("production-ocr")
 
 models_volume = modal.Volume.from_name("ocr-models", create_if_missing=True)
 
-# Image definition with real layout detection and Qwen Vision SLM dependencies
+# Image definition with vLLM, PP-DocLayoutV3, and PyTorch CUDA dependencies
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("libgl1-mesa-glx", "libglib2.0-0", "poppler-utils")
     .pip_install(
+        "vllm>=0.6.3",
         "fastapi[standard]>=0.110.0",
-        "torch>=2.2.0",
-        "transformers>=4.45.0",
-        "accelerate>=0.30.0",
-        "qwen-vl-utils>=0.0.8",
-        "rapid_layout>=0.1.4",
+        "rapid_layout>=1.2.1",
         "rapidocr_onnxruntime>=1.4.0",
+        "transformers>=4.45.0",
+        "qwen-vl-utils>=0.0.8",
+        "accelerate>=0.30.0",
+        "torch>=2.4.0",
         "PyMuPDF>=1.24.0",
         "Pillow>=10.2.0",
         "pydantic>=2.0.0",
         "httpx>=0.27.0",
     )
+    .env({
+        "VLLM_USE_V1": "0",
+        "VLLM_USE_FLASHINFER_SAMPLER": "0",
+    })
+    .run_commands(
+        "python -c 'from rapid_layout import RapidLayout; RapidLayout(model_type=\"pp_doc_layoutv3\")'"
+    )
 )
 
 PROMPTS = {
-    "text": "OCR and recognize the text in this image crop. Maintain the original reading flow and formatting. Output only the recognized text:",
+    "text": "OCR and recognize the text in this image crop. Maintain the original reading flow and formatting. Output only the recognized text without bounding boxes or coordinates:",
     "table": "Convert this table image crop into a clean, valid GitHub-flavored Markdown table. Preserve all columns, rows, headers, and numerical alignment accurately. Only output the markdown table:",
-    "formula": "Convert this mathematical formula into clean LaTeX format. Wrap display formulas in $$ and inline formulas in $. Only output the LaTeX string:",
+    "formula": "Convert this mathematical formula into clean LaTeX format. Wrap display formulas in $$ and inline formulas in $. Output only the LaTeX string without bounding boxes or coordinates:",
     "figure": "Describe this visual figure, chart, or diagram accurately in 1-2 concise sentences. If it is a graph, summarize axes and trends. Output only the description:",
 }
+
 
 @app.function(
     image=image,
@@ -45,18 +54,19 @@ PROMPTS = {
 def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
     """
     Stage 1: PP-DocLayoutV3 Semantic Layout Detection on NVIDIA T4.
-    Segments document pages into semantic blocks (text, table, formula, figure)
-    and extracts high-resolution image crops for Stage 2 generative recognition.
+    Loads official pp_doc_layoutv3 model, segments document pages into
+    semantic blocks (table, formula, text, figure), and extracts crops.
     """
-    import fitz  # PyMuPDF
+    import pymupdf as fitz
     import numpy as np
     from rapid_layout import RapidLayout
 
-    # Initialize PP-DocLayoutV3 engine (PicoDet / YOLOv8 layout model)
+    # Explicitly load official PP-DocLayoutV3 ONNX model
     try:
-        layout_engine = RapidLayout(conf_thres=0.3)
-    except Exception:
+        layout_engine = RapidLayout(model_type="pp_doc_layoutv3", conf_thresh=0.25)
+    except Exception as e:
         layout_engine = None
+        print(f"Failed to initialize PP-DocLayoutV3: {e}")
 
     pages_crops = []
     total_pages = 1
@@ -74,34 +84,36 @@ def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
             pil_images = [Image.open(io.BytesIO(file_bytes)).convert("RGB")]
             total_pages = len(pil_images)
 
-        # Process each page with layout detection
+        # Process each page through PP-DocLayoutV3
         for page_idx, page_img in enumerate(pil_images):
             img_np = np.array(page_img)
             boxes, scores, class_names = [], [], []
 
             if layout_engine is not None:
                 try:
-                    layout_res, _ = layout_engine(img_np)
-                    if layout_res:
-                        for item in layout_res:
-                            # item: [bbox, label, score]
-                            bbox = item[0]
-                            label = str(item[1]).lower()
-                            score = float(item[2])
-                            boxes.append(bbox)
-                            scores.append(score)
-                            class_names.append(label)
-                except Exception:
-                    pass
+                    # rapid_layout 1.2+ returns a RapidLayoutOutput dataclass
+                    res = layout_engine(img_np)
+                    if res and res.boxes:
+                        boxes = res.boxes
+                        class_names = [str(c).lower() for c in res.class_names]
+                        scores = res.scores
+                except Exception as e:
+                    print(f"Layout inference error on page {page_idx+1}: {e}")
 
-            # Fallback if no layout boxes found: treat as full page text block
+            # Fallback if no layout boxes detected
             if not boxes:
                 boxes = [[0, 0, page_img.width, page_img.height]]
                 class_names = ["text"]
                 scores = [1.0]
 
+            # Reading order sorting: Top-to-bottom, left-to-right
+            sorted_items = sorted(
+                zip(boxes, class_names, scores),
+                key=lambda item: (item[0][1] // 50, item[0][0])
+            )
+
             # Crop semantic regions and serialize
-            for b_idx, (box, label, score) in enumerate(zip(boxes, class_names, scores)):
+            for b_idx, (box, raw_label, score) in enumerate(sorted_items):
                 x0, y0, x1, y1 = [int(v) for v in box]
                 x0, y0 = max(0, x0), max(0, y0)
                 x1, y1 = min(page_img.width, x1), min(page_img.height, y1)
@@ -114,20 +126,21 @@ def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
                 crop_pil.save(buf, format="JPEG", quality=95)
                 crop_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-                # Map detection label to specialized category
+                # Map PP-DocLayoutV3 labels to specialized categories
                 cat = "text"
-                if "table" in label:
+                if raw_label == "table":
                     cat = "table"
-                elif "formula" in label or "equation" in label:
+                elif "formula" in raw_label or "equation" in raw_label or raw_label == "algorithm":
                     cat = "formula"
-                elif "fig" in label or "image" in label or "chart" in label:
+                elif raw_label in ["chart", "image", "footer_image", "header_image", "figure"]:
                     cat = "figure"
 
                 pages_crops.append({
                     "page": page_idx + 1,
                     "region_id": b_idx,
+                    "raw_label": raw_label,
                     "label": cat,
-                    "score": round(score, 3),
+                    "score": round(float(score), 3),
                     "bbox": [x0, y0, x1, y1],
                     "crop_b64": crop_b64,
                 })
@@ -136,6 +149,7 @@ def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
         pages_crops.append({
             "page": 1,
             "region_id": 0,
+            "raw_label": "error",
             "label": "error",
             "score": 0.0,
             "bbox": [],
@@ -157,102 +171,79 @@ def parse_layout(file_bytes: bytes, extension: str) -> Dict[str, Any]:
     scaledown_window=120,
     timeout=600,
 )
-class QwenSLMTranscriber:
+class VLLMTranscriber:
     """
-    Stage 2: Targeted Multimodal Generative OCR using Qwen Vision-Language SLM.
-    Loads Qwen2-VL / Qwen 3.5 on NVIDIA A10G and generates structured Markdown/LaTeX.
+    Stage 2: Targeted Multimodal Generative OCR served via vLLM engine.
+    Uses continuous batching across document crops to maximize throughput on NVIDIA A10G.
+    Model: Qwen/Qwen2-VL-2B-Instruct
     """
     @modal.enter()
     def load_model(self):
-        import torch
-        from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+        from vllm import LLM, SamplingParams
 
         self.model_id = "Qwen/Qwen2-VL-2B-Instruct"
-        print(f"Loading {self.model_id} on NVIDIA A10G GPU...")
-        
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-            self.model_id,
-            torch_dtype=torch.bfloat16,
-            device_map="cuda",
-            low_cpu_mem_usage=True,
+        print(f"🚀 Initializing vLLM engine for {self.model_id} on NVIDIA A10G...")
+        self.llm = LLM(
+            model=self.model_id,
+            trust_remote_code=True,
+            max_model_len=4096,
+            gpu_memory_utilization=0.80,
+            limit_mm_per_prompt={"image": 1},
+            enforce_eager=True,
         )
-        self.processor = AutoProcessor.from_pretrained(self.model_id)
-        self.model.eval()
-        print(f"{self.model_id} initialized successfully.")
+        self.sampling_params = SamplingParams(
+            temperature=0.0,
+            max_tokens=1024,
+        )
+        print(f"✅ vLLM engine ready for {self.model_id} on NVIDIA A10G.")
 
     @modal.method()
     def transcribe_crops(self, crops: List[Dict[str, Any]]) -> Dict[str, Any]:
-        from qwen_vl_utils import process_vision_info
-        import torch
-
         results = []
         markdown_sections = []
+
+        if not crops:
+            return {"markdown": "No crops detected.", "layout": {"regions": []}, "status": "done"}
+
+        # 1. Prepare continuous batch inputs for vLLM
+        vllm_inputs = []
+        valid_crop_metas = []
 
         for crop_meta in crops:
             b64_crop = crop_meta.get("crop_b64", "")
             label = crop_meta.get("label", "text")
-            page = crop_meta.get("page", 1)
-            bbox = crop_meta.get("bbox", [])
-
             if not b64_crop:
                 continue
 
-            try:
-                crop_bytes = base64.b64decode(b64_crop)
-                crop_pil = Image.open(io.BytesIO(crop_bytes)).convert("RGB")
-                prompt_text = PROMPTS.get(label, PROMPTS["text"])
+            crop_bytes = base64.b64decode(b64_crop)
+            crop_pil = Image.open(io.BytesIO(crop_bytes)).convert("RGB")
+            prompt_text = PROMPTS.get(label, PROMPTS["text"])
 
-                # Build multimodal chat template for Qwen2-VL
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "image", "image": crop_pil},
-                            {"type": "text", "text": prompt_text},
-                        ],
-                    }
-                ]
-
-                text = self.processor.apply_chat_template(
-                    messages, tokenize=False, add_generation_prompt=True
-                )
-                image_inputs, video_inputs = process_vision_info(messages)
-                inputs = self.processor(
-                    text=[text],
-                    images=image_inputs,
-                    videos=video_inputs,
-                    padding=True,
-                    return_tensors="pt",
-                ).to("cuda")
-
-                with torch.no_grad():
-                    generated_ids = self.model.generate(
-                        **inputs,
-                        max_new_tokens=1024,
-                        temperature=0.1,
-                        top_p=0.9,
-                        repetition_penalty=1.05,
-                    )
-                generated_ids_trimmed = [
-                    out_ids[len(in_ids):]
-                    for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
-                ]
-                output_text = self.processor.batch_decode(
-                    generated_ids_trimmed,
-                    skip_special_tokens=True,
-                    clean_up_tokenization_spaces=False,
-                )[0].strip()
-
-            except Exception as e:
-                output_text = f"Transcription error: {str(e)}"
-
-            results.append({
-                "page": page,
-                "label": label,
-                "bbox": bbox,
-                "content": output_text,
+            # Standard vLLM multimodal chat template with system header
+            formatted_prompt = (
+                f"<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
+                f"<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>"
+                f"{prompt_text}<|im_end|>\n<|im_start|>assistant\n"
+            )
+            vllm_inputs.append({
+                "prompt": formatted_prompt,
+                "multi_modal_data": {"image": crop_pil},
             })
-            markdown_sections.append(output_text)
+            valid_crop_metas.append(crop_meta)
+
+        if vllm_inputs:
+            outputs = self.llm.generate(vllm_inputs, sampling_params=self.sampling_params)
+            for crop_meta, output in zip(valid_crop_metas, outputs):
+                text_out = output.outputs[0].text.strip()
+                results.append({
+                    "page": crop_meta.get("page", 1),
+                    "region_id": crop_meta.get("region_id", 0),
+                    "label": crop_meta.get("label", "text"),
+                    "raw_label": crop_meta.get("raw_label", "text"),
+                    "bbox": crop_meta.get("bbox", []),
+                    "content": text_out,
+                })
+                markdown_sections.append(text_out)
 
         final_markdown = "\n\n".join(markdown_sections) if markdown_sections else "No text recognized."
         return {
@@ -269,19 +260,19 @@ class QwenSLMTranscriber:
 @modal.fastapi_endpoint(method="POST")
 def process_document(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Unified HTTP Webhook for Hugging Face Spaces Gateway.
-    Stage 1 (Layout on T4) -> Stage 2 (Qwen SLM on A10G) -> Structured Markdown.
+    Unified HTTP Webhook for Gateway.
+    Stage 1 (PP-DocLayoutV3 on T4) -> Stage 2 (vLLM Qwen2-VL-2B-Instruct on A10G) -> Structured Markdown.
     """
     raw_b64 = payload.get("data", "")
     extension = payload.get("extension", "pdf")
     file_bytes = base64.b64decode(raw_b64)
 
-    # 1. Execute Stage 1 Layout Detection on T4 GPU
+    # 1. Stage 1: PP-DocLayoutV3 Layout Detection on T4
     layout_result = parse_layout.remote(file_bytes, extension)
     regions = layout_result.get("regions", [])
 
-    # 2. Execute Stage 2 Generative Vision SLM Transcription on A10G GPU
-    transcriber = QwenSLMTranscriber()
+    # 2. Stage 2: vLLM Continuous Batching Transcriber on A10G
+    transcriber = VLLMTranscriber()
     ocr_result = transcriber.transcribe_crops.remote(regions)
 
     return {
@@ -292,3 +283,24 @@ def process_document(payload: Dict[str, Any]) -> Dict[str, Any]:
             "layout": ocr_result.get("layout", {}),
         },
     }
+
+
+@app.local_entrypoint()
+def main(file_path: str = "eval/dataset/images/02_financial_table.png"):
+    """CLI test runner for end-to-end pipeline verification."""
+    with open(file_path, "rb") as f:
+        file_bytes = f.read()
+
+    ext = file_path.split(".")[-1]
+    print(f"Testing document processing for {file_path} ({len(file_bytes)} bytes)...")
+
+    # 1. Test layout detection
+    layout_res = parse_layout.remote(file_bytes, ext)
+    print(f"Stage 1 Complete: {len(layout_res['regions'])} regions detected.")
+    for r in layout_res["regions"]:
+        print(f"  - Region {r['region_id']}: {r['label']} (raw: {r['raw_label']}, score: {r['score']})")
+
+    # 2. Test vLLM transcription
+    transcriber = VLLMTranscriber()
+    ocr_res = transcriber.transcribe_crops.remote(layout_res["regions"])
+    print(f"\nStage 2 Complete (vLLM Output):\n{ocr_res['markdown']}")
