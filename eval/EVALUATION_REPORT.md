@@ -19,7 +19,7 @@ While effective on uniform, single-column flat text (e.g. standard book pages), 
 
 ### The Solution: Two-Stage Layout-First VDU Architecture
 - **Stage 1 (Layout & Semantic Block Detection)**: Uses **PP-DocLayoutV3** on an NVIDIA T4 GPU to segment the page into semantic regions (`column_1`, `column_2`, `table`, `formula`, `figure`) with bounding box coordinates and hierarchical reading flow.
-- **Stage 2 (Targeted Multimodal Generative Recognition)**: Dispatches localized semantic crops to **Qwen 3.5 SLM** on an NVIDIA A10G GPU using prompt specialization:
+- **Stage 2 (Targeted Multimodal Generative Recognition)**: Dispatches localized semantic crops to **Qwen2-VL-2B-Instruct** served via **vLLM** on an NVIDIA A10G GPU using prompt specialization:
   - Tables $\rightarrow$ Pristine GitHub-flavored Markdown tables (`| Col1 | Col2 | ... |`).
   - Formulas $\rightarrow$ Standard mathematical LaTeX strings.
   - Multi-column paragraphs $\rightarrow$ Sequential top-to-bottom column reading.
