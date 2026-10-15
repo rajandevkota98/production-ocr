@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: ocr-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: deploy/hf_spaces/Dockerfile
+    container_name: ocr-gateway
+    ports:
+      - "7860:7860"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=7860
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: ocr-worker
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MAX_BATCH_SIZE=4
+      - BATCH_WINDOW_MS=100
+      - MODAL_ENDPOINT_URL=${MODAL_ENDPOINT_URL:-}
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - redis
+    restart: unless-stopped
