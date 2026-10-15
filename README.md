@@ -12,7 +12,7 @@ The **Production OCR Platform** combines deterministic layout analysis with gene
 flowchart LR
     Client(["Client / AI Agent"]) -->|POST /process| Gateway["High-Concurrency Ingest Gateway\n• Rust (Axum) or Python (FastAPI)\n• 2 vCPU, 16 GB RAM (HF Spaces)\n• 10MB limit & atomic Redis queueing"]
     Gateway --> Redis[("Upstash Redis\n• Free Task Queue")]
-    Redis --> Worker["Modal Serverless GPU\n• Stage 1: PP-DocLayoutV3 (T4)\n• Stage 2: Qwen 3.5 4B (A10G/A100)"]
+    Redis --> Worker["Modal Serverless GPU\n• Stage 1: PP-DocLayoutV3 (T4)\n• Stage 2: Qwen2-VL-2B-Instruct on vLLM (A10G)"]
     Worker --> Redis
     Client -->|GET /status/:id| Gateway
 ```
@@ -24,7 +24,7 @@ flowchart LR
 - **Rust Ingestion Gateway (`gateway-rust/`)**: High-concurrency **Rust (Axum)** gateway with `tokio` async runtime, `tower-http` 10MB body limiting, atomic Redis `HSET` transactions, and `cargo-chef` Alpine builds.
 - **Python Ingestion Gateway (`gateway/`)**: Lightweight **FastAPI** gateway with custom exception hierarchies and structured logging.
 - **Asynchronous Worker (`worker/`)**: Dynamic batching collector (`100ms` window, `max 4` batch) with zero-copy shared memory (`/dev/shm`) buffer transfer.
-- **Serverless GPU Inference (`inference/`)**: Modal application coordinating `PP-DocLayoutV3` on T4 GPUs and `Qwen 3.5 4B` on A10G/A100 GPUs with scale-to-zero economics.
+- **Serverless GPU Inference (`inference/`)**: Modal application coordinating `PP-DocLayoutV3` on T4 GPUs and `Qwen2-VL-2B-Instruct` served via vLLM on NVIDIA A10G GPUs with continuous batching and scale-to-zero economics.
 - **Agent Tooling (`mcp/`)**: FastMCP server enabling AI assistants (Claude Code, Antigravity) to invoke document parsing natively.
 
 ---
