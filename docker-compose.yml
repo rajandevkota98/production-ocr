@@ -12,9 +12,23 @@ services:
     build:
       context: .
       dockerfile: deploy/hf_spaces/Dockerfile
-    container_name: ocr-gateway
+    container_name: ocr-gateway-python
     ports:
       - "7860:7860"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=7860
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  gateway-rust:
+    build:
+      context: ./gateway-rust
+      dockerfile: Dockerfile
+    container_name: ocr-gateway-rust
+    ports:
+      - "5000:7860"
     environment:
       - REDIS_URL=redis://redis:6379
       - PORT=7860
