@@ -1,0 +1,1039 @@
+{
+  "summary": {
+    "sample_size_n": 100,
+    "total_benchmark_time_sec": 278.62,
+    "estimated_benchmark_cost_usd": 0.08,
+    "overall": {
+      "baseline_cer_mean": 1.3263,
+      "baseline_cer_std": 1.3459,
+      "twostage_cer_mean": 1.3046,
+      "twostage_cer_std": 1.453,
+      "baseline_wer_mean": 0.6784,
+      "twostage_wer_mean": 0.7671,
+      "baseline_avg_latency_sec": 2.12,
+      "twostage_avg_latency_sec": 2.61
+    },
+    "multi_column_subset_n40": {
+      "baseline_avg_inversions": 5.15,
+      "twostage_avg_inversions": 6.0,
+      "inversions_eliminated_pct": -16.5,
+      "baseline_kendall_tau": 0.486,
+      "twostage_kendall_tau": 0.734
+    },
+    "table_subset_n35": {
+      "baseline_avg_structure_score": 0.206,
+      "twostage_avg_structure_score": 0.239
+    },
+    "formula_subset_n25": {
+      "baseline_term_accuracy": 0.776,
+      "twostage_term_accuracy": 0.92
+    },
+    "economic_tco_per_1000_pages": {
+      "aws_textract_google_cloud": "$15.00 - $50.00",
+      "twostage_modal_serverless": "$0.75 - $1.20",
+      "cost_savings_pct": "95.0% - 97.5%"
+    }
+  },
+  "sample_results": [
+    {
+      "doc_id": "doc_001",
+      "type": "multi_column",
+      "baseline_cer": 0.5707,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7826,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.6802,
+      "twostage_latency": 10.3999
+    },
+    {
+      "doc_id": "doc_002",
+      "type": "multi_column",
+      "baseline_cer": 0.5524,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7297,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.2962,
+      "twostage_latency": 10.4916
+    },
+    {
+      "doc_id": "doc_003",
+      "type": "multi_column",
+      "baseline_cer": 0.5767,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6849,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.1744,
+      "twostage_latency": 10.7446
+    },
+    {
+      "doc_id": "doc_004",
+      "type": "multi_column",
+      "baseline_cer": 0.5951,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7945,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.3043,
+      "twostage_latency": 10.6347
+    },
+    {
+      "doc_id": "doc_005",
+      "type": "multi_column",
+      "baseline_cer": 0.4914,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.2361,
+      "twostage_latency": 2.6894
+    },
+    {
+      "doc_id": "doc_006",
+      "type": "multi_column",
+      "baseline_cer": 0.5707,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7826,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.7699,
+      "twostage_latency": 2.1109
+    },
+    {
+      "doc_id": "doc_007",
+      "type": "multi_column",
+      "baseline_cer": 0.5524,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7297,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.0166,
+      "twostage_latency": 2.7935
+    },
+    {
+      "doc_id": "doc_008",
+      "type": "multi_column",
+      "baseline_cer": 0.5767,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6849,
+      "twostage_wer": 0.0,
+      "baseline_latency": 1.6617,
+      "twostage_latency": 3.3165
+    },
+    {
+      "doc_id": "doc_009",
+      "type": "multi_column",
+      "baseline_cer": 0.5951,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7945,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.0042,
+      "twostage_latency": 2.3318
+    },
+    {
+      "doc_id": "doc_010",
+      "type": "multi_column",
+      "baseline_cer": 0.4897,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.0,
+      "baseline_latency": 1.7515,
+      "twostage_latency": 2.7262
+    },
+    {
+      "doc_id": "doc_011",
+      "type": "multi_column",
+      "baseline_cer": 0.5567,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.6957,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.9715,
+      "twostage_latency": 2.294
+    },
+    {
+      "doc_id": "doc_012",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.1625,
+      "twostage_latency": 2.3074
+    },
+    {
+      "doc_id": "doc_013",
+      "type": "multi_column",
+      "baseline_cer": 0.5732,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6712,
+      "twostage_wer": 0.0,
+      "baseline_latency": 1.7381,
+      "twostage_latency": 2.4348
+    },
+    {
+      "doc_id": "doc_014",
+      "type": "multi_column",
+      "baseline_cer": 0.5934,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7945,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.052,
+      "twostage_latency": 2.2796
+    },
+    {
+      "doc_id": "doc_015",
+      "type": "multi_column",
+      "baseline_cer": 0.4879,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7391,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.0096,
+      "twostage_latency": 2.4717
+    },
+    {
+      "doc_id": "doc_016",
+      "type": "multi_column",
+      "baseline_cer": 0.5654,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.7206,
+      "twostage_latency": 2.306
+    },
+    {
+      "doc_id": "doc_017",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.1476,
+      "twostage_latency": 2.7095
+    },
+    {
+      "doc_id": "doc_018",
+      "type": "multi_column",
+      "baseline_cer": 0.5732,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6712,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.0667,
+      "twostage_latency": 2.3167
+    },
+    {
+      "doc_id": "doc_019",
+      "type": "multi_column",
+      "baseline_cer": 0.5916,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7808,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 1.9718,
+      "twostage_latency": 2.7503
+    },
+    {
+      "doc_id": "doc_020",
+      "type": "multi_column",
+      "baseline_cer": 0.4914,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7681,
+      "twostage_wer": 0.0,
+      "baseline_latency": 1.9921,
+      "twostage_latency": 2.3053
+    },
+    {
+      "doc_id": "doc_021",
+      "type": "multi_column",
+      "baseline_cer": 0.5672,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7681,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.9343,
+      "twostage_latency": 2.2687
+    },
+    {
+      "doc_id": "doc_022",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.2304,
+      "twostage_latency": 2.6482
+    },
+    {
+      "doc_id": "doc_023",
+      "type": "multi_column",
+      "baseline_cer": 0.575,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6712,
+      "twostage_wer": 0.0,
+      "baseline_latency": 1.9111,
+      "twostage_latency": 2.3393
+    },
+    {
+      "doc_id": "doc_024",
+      "type": "multi_column",
+      "baseline_cer": 0.5916,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7808,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.2099,
+      "twostage_latency": 2.777
+    },
+    {
+      "doc_id": "doc_025",
+      "type": "multi_column",
+      "baseline_cer": 0.4879,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7391,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.0155,
+      "twostage_latency": 2.1564
+    },
+    {
+      "doc_id": "doc_026",
+      "type": "multi_column",
+      "baseline_cer": 0.5654,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 1.8991,
+      "twostage_latency": 2.5981
+    },
+    {
+      "doc_id": "doc_027",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.1528,
+      "twostage_latency": 2.3517
+    },
+    {
+      "doc_id": "doc_028",
+      "type": "multi_column",
+      "baseline_cer": 0.575,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6712,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.1883,
+      "twostage_latency": 2.5676
+    },
+    {
+      "doc_id": "doc_029",
+      "type": "multi_column",
+      "baseline_cer": 0.5916,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7808,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.3602,
+      "twostage_latency": 2.1783
+    },
+    {
+      "doc_id": "doc_030",
+      "type": "multi_column",
+      "baseline_cer": 0.4914,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.2072,
+      "twostage_latency": 2.819
+    },
+    {
+      "doc_id": "doc_031",
+      "type": "multi_column",
+      "baseline_cer": 0.5654,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 2.1276,
+      "twostage_latency": 2.6262
+    },
+    {
+      "doc_id": "doc_032",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.37,
+      "twostage_latency": 2.7194
+    },
+    {
+      "doc_id": "doc_033",
+      "type": "multi_column",
+      "baseline_cer": 0.575,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6712,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.1997,
+      "twostage_latency": 2.1434
+    },
+    {
+      "doc_id": "doc_034",
+      "type": "multi_column",
+      "baseline_cer": 0.5899,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7945,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.5903,
+      "twostage_latency": 2.3021
+    },
+    {
+      "doc_id": "doc_035",
+      "type": "multi_column",
+      "baseline_cer": 0.4879,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7391,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.2419,
+      "twostage_latency": 2.6474
+    },
+    {
+      "doc_id": "doc_036",
+      "type": "multi_column",
+      "baseline_cer": 0.5654,
+      "twostage_cer": 0.5585,
+      "baseline_wer": 0.7536,
+      "twostage_wer": 0.6667,
+      "baseline_latency": 2.1248,
+      "twostage_latency": 2.2638
+    },
+    {
+      "doc_id": "doc_037",
+      "type": "multi_column",
+      "baseline_cer": 0.549,
+      "twostage_cer": 0.549,
+      "baseline_wer": 0.7162,
+      "twostage_wer": 0.6757,
+      "baseline_latency": 2.326,
+      "twostage_latency": 2.7275
+    },
+    {
+      "doc_id": "doc_038",
+      "type": "multi_column",
+      "baseline_cer": 0.5802,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.7123,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.4237,
+      "twostage_latency": 2.3159
+    },
+    {
+      "doc_id": "doc_039",
+      "type": "multi_column",
+      "baseline_cer": 0.5916,
+      "twostage_cer": 0.5742,
+      "baseline_wer": 0.7808,
+      "twostage_wer": 0.7123,
+      "baseline_latency": 2.3859,
+      "twostage_latency": 2.3919
+    },
+    {
+      "doc_id": "doc_040",
+      "type": "multi_column",
+      "baseline_cer": 0.45,
+      "twostage_cer": 0.0,
+      "baseline_wer": 0.6667,
+      "twostage_wer": 0.0,
+      "baseline_latency": 2.3852,
+      "twostage_latency": 2.5923
+    },
+    {
+      "doc_id": "doc_041",
+      "type": "table",
+      "baseline_cer": 0.6237,
+      "twostage_cer": 0.6272,
+      "baseline_wer": 0.3953,
+      "twostage_wer": 0.3721,
+      "baseline_latency": 2.4205,
+      "twostage_latency": 2.0713
+    },
+    {
+      "doc_id": "doc_042",
+      "type": "table",
+      "baseline_cer": 0.6283,
+      "twostage_cer": 0.6468,
+      "baseline_wer": 0.2791,
+      "twostage_wer": 0.3488,
+      "baseline_latency": 2.3121,
+      "twostage_latency": 2.6288
+    },
+    {
+      "doc_id": "doc_043",
+      "type": "table",
+      "baseline_cer": 0.6064,
+      "twostage_cer": 0.7589,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.3223,
+      "twostage_latency": 2.2494
+    },
+    {
+      "doc_id": "doc_044",
+      "type": "table",
+      "baseline_cer": 0.6085,
+      "twostage_cer": 0.7616,
+      "baseline_wer": 0.3023,
+      "twostage_wer": 0.7209,
+      "baseline_latency": 2.375,
+      "twostage_latency": 2.6274
+    },
+    {
+      "doc_id": "doc_045",
+      "type": "table",
+      "baseline_cer": 0.63,
+      "twostage_cer": 0.6374,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.3182,
+      "baseline_latency": 2.4234,
+      "twostage_latency": 2.2634
+    },
+    {
+      "doc_id": "doc_046",
+      "type": "table",
+      "baseline_cer": 0.63,
+      "twostage_cer": 0.8498,
+      "baseline_wer": 0.3636,
+      "twostage_wer": 1.0227,
+      "baseline_latency": 2.365,
+      "twostage_latency": 2.2037
+    },
+    {
+      "doc_id": "doc_047",
+      "type": "table",
+      "baseline_cer": 0.6173,
+      "twostage_cer": 0.7762,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.3586,
+      "twostage_latency": 2.2977
+    },
+    {
+      "doc_id": "doc_048",
+      "type": "table",
+      "baseline_cer": 0.6209,
+      "twostage_cer": 0.7653,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.4993,
+      "twostage_latency": 2.0181
+    },
+    {
+      "doc_id": "doc_049",
+      "type": "table",
+      "baseline_cer": 0.631,
+      "twostage_cer": 0.7749,
+      "baseline_wer": 0.3256,
+      "twostage_wer": 0.6744,
+      "baseline_latency": 2.3931,
+      "twostage_latency": 2.4851
+    },
+    {
+      "doc_id": "doc_050",
+      "type": "table",
+      "baseline_cer": 0.6165,
+      "twostage_cer": 0.6237,
+      "baseline_wer": 0.3488,
+      "twostage_wer": 0.3256,
+      "baseline_latency": 2.4172,
+      "twostage_latency": 2.1915
+    },
+    {
+      "doc_id": "doc_051",
+      "type": "table",
+      "baseline_cer": 0.6291,
+      "twostage_cer": 0.8727,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.9545,
+      "baseline_latency": 2.4946,
+      "twostage_latency": 2.4913
+    },
+    {
+      "doc_id": "doc_052",
+      "type": "table",
+      "baseline_cer": 0.6182,
+      "twostage_cer": 0.7636,
+      "baseline_wer": 0.3333,
+      "twostage_wer": 0.6905,
+      "baseline_latency": 2.3299,
+      "twostage_latency": 2.142
+    },
+    {
+      "doc_id": "doc_053",
+      "type": "table",
+      "baseline_cer": 0.6209,
+      "twostage_cer": 0.7726,
+      "baseline_wer": 0.3636,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.3648,
+      "twostage_latency": 2.4113
+    },
+    {
+      "doc_id": "doc_054",
+      "type": "table",
+      "baseline_cer": 0.6187,
+      "twostage_cer": 0.7626,
+      "baseline_wer": 0.3953,
+      "twostage_wer": 0.6744,
+      "baseline_latency": 2.5611,
+      "twostage_latency": 2.6865
+    },
+    {
+      "doc_id": "doc_055",
+      "type": "table",
+      "baseline_cer": 0.6418,
+      "twostage_cer": 0.7948,
+      "baseline_wer": 0.3636,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.3736,
+      "twostage_latency": 2.6165
+    },
+    {
+      "doc_id": "doc_056",
+      "type": "table",
+      "baseline_cer": 0.6129,
+      "twostage_cer": 0.7599,
+      "baseline_wer": 0.3488,
+      "twostage_wer": 0.6977,
+      "baseline_latency": 2.5247,
+      "twostage_latency": 2.0133
+    },
+    {
+      "doc_id": "doc_057",
+      "type": "table",
+      "baseline_cer": 0.6115,
+      "twostage_cer": 0.7626,
+      "baseline_wer": 0.3256,
+      "twostage_wer": 0.6744,
+      "baseline_latency": 2.3088,
+      "twostage_latency": 2.4479
+    },
+    {
+      "doc_id": "doc_058",
+      "type": "table",
+      "baseline_cer": 0.6227,
+      "twostage_cer": 0.6374,
+      "baseline_wer": 0.2955,
+      "twostage_wer": 0.3182,
+      "baseline_latency": 2.328,
+      "twostage_latency": 2.2126
+    },
+    {
+      "doc_id": "doc_059",
+      "type": "table",
+      "baseline_cer": 0.6218,
+      "twostage_cer": 0.7673,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2752,
+      "twostage_latency": 2.4761
+    },
+    {
+      "doc_id": "doc_060",
+      "type": "table",
+      "baseline_cer": 0.6159,
+      "twostage_cer": 0.6304,
+      "baseline_wer": 0.2791,
+      "twostage_wer": 0.3488,
+      "baseline_latency": 2.1911,
+      "twostage_latency": 2.2163
+    },
+    {
+      "doc_id": "doc_061",
+      "type": "table",
+      "baseline_cer": 0.6209,
+      "twostage_cer": 0.769,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2405,
+      "twostage_latency": 2.6503
+    },
+    {
+      "doc_id": "doc_062",
+      "type": "table",
+      "baseline_cer": 0.6291,
+      "twostage_cer": 0.7709,
+      "baseline_wer": 0.4091,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2195,
+      "twostage_latency": 2.0069
+    },
+    {
+      "doc_id": "doc_063",
+      "type": "table",
+      "baseline_cer": 0.6218,
+      "twostage_cer": 0.7709,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2843,
+      "twostage_latency": 2.1925
+    },
+    {
+      "doc_id": "doc_064",
+      "type": "table",
+      "baseline_cer": 0.6218,
+      "twostage_cer": 0.6327,
+      "baseline_wer": 0.3333,
+      "twostage_wer": 0.3571,
+      "baseline_latency": 2.3117,
+      "twostage_latency": 2.279
+    },
+    {
+      "doc_id": "doc_065",
+      "type": "table",
+      "baseline_cer": 0.6273,
+      "twostage_cer": 0.6384,
+      "baseline_wer": 0.3256,
+      "twostage_wer": 0.3023,
+      "baseline_latency": 2.2856,
+      "twostage_latency": 2.597
+    },
+    {
+      "doc_id": "doc_066",
+      "type": "table",
+      "baseline_cer": 0.6182,
+      "twostage_cer": 0.7636,
+      "baseline_wer": 0.3333,
+      "twostage_wer": 0.6905,
+      "baseline_latency": 2.2034,
+      "twostage_latency": 2.0009
+    },
+    {
+      "doc_id": "doc_067",
+      "type": "table",
+      "baseline_cer": 0.6418,
+      "twostage_cer": 0.6493,
+      "baseline_wer": 0.3409,
+      "twostage_wer": 0.3182,
+      "baseline_latency": 2.2664,
+      "twostage_latency": 2.6646
+    },
+    {
+      "doc_id": "doc_068",
+      "type": "table",
+      "baseline_cer": 0.6206,
+      "twostage_cer": 0.7553,
+      "baseline_wer": 0.4318,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2589,
+      "twostage_latency": 2.2371
+    },
+    {
+      "doc_id": "doc_069",
+      "type": "table",
+      "baseline_cer": 0.6151,
+      "twostage_cer": 0.7626,
+      "baseline_wer": 0.3256,
+      "twostage_wer": 0.6744,
+      "baseline_latency": 2.1637,
+      "twostage_latency": 2.0147
+    },
+    {
+      "doc_id": "doc_070",
+      "type": "table",
+      "baseline_cer": 0.6273,
+      "twostage_cer": 0.7786,
+      "baseline_wer": 0.3256,
+      "twostage_wer": 0.6744,
+      "baseline_latency": 2.1953,
+      "twostage_latency": 2.1871
+    },
+    {
+      "doc_id": "doc_071",
+      "type": "table",
+      "baseline_cer": 0.6327,
+      "twostage_cer": 0.7709,
+      "baseline_wer": 0.4091,
+      "twostage_wer": 0.6818,
+      "baseline_latency": 2.2496,
+      "twostage_latency": 2.2538
+    },
+    {
+      "doc_id": "doc_072",
+      "type": "table",
+      "baseline_cer": 0.6283,
+      "twostage_cer": 0.6431,
+      "baseline_wer": 0.2791,
+      "twostage_wer": 0.3023,
+      "baseline_latency": 2.142,
+      "twostage_latency": 2.151
+    },
+    {
+      "doc_id": "doc_073",
+      "type": "table",
+      "baseline_cer": 0.6201,
+      "twostage_cer": 0.7563,
+      "baseline_wer": 0.3953,
+      "twostage_wer": 0.6977,
+      "baseline_latency": 2.2078,
+      "twostage_latency": 1.9973
+    },
+    {
+      "doc_id": "doc_074",
+      "type": "table",
+      "baseline_cer": 0.6227,
+      "twostage_cer": 0.6374,
+      "baseline_wer": 0.2955,
+      "twostage_wer": 0.3182,
+      "baseline_latency": 2.2223,
+      "twostage_latency": 2.4311
+    },
+    {
+      "doc_id": "doc_075",
+      "type": "table",
+      "baseline_cer": 0.6418,
+      "twostage_cer": 0.6493,
+      "baseline_wer": 0.3636,
+      "twostage_wer": 0.3182,
+      "baseline_latency": 2.1934,
+      "twostage_latency": 2.02
+    },
+    {
+      "doc_id": "doc_076",
+      "type": "formula",
+      "baseline_cer": 4.3182,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.0909,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.9263,
+      "twostage_latency": 2.1644
+    },
+    {
+      "doc_id": "doc_077",
+      "type": "formula",
+      "baseline_cer": 2.791,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.6875,
+      "twostage_wer": 1.375,
+      "baseline_latency": 1.9714,
+      "twostage_latency": 1.6825
+    },
+    {
+      "doc_id": "doc_078",
+      "type": "formula",
+      "baseline_cer": 4.3478,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.7989,
+      "twostage_latency": 2.1174
+    },
+    {
+      "doc_id": "doc_079",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 1.9348,
+      "twostage_latency": 1.7463
+    },
+    {
+      "doc_id": "doc_080",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.5898,
+      "twostage_latency": 2.1197
+    },
+    {
+      "doc_id": "doc_081",
+      "type": "formula",
+      "baseline_cer": 2.791,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.6875,
+      "twostage_wer": 1.375,
+      "baseline_latency": 1.9697,
+      "twostage_latency": 1.8556
+    },
+    {
+      "doc_id": "doc_082",
+      "type": "formula",
+      "baseline_cer": 4.3261,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.7723,
+      "twostage_latency": 2.1406
+    },
+    {
+      "doc_id": "doc_083",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 2.079,
+      "twostage_latency": 1.7611
+    },
+    {
+      "doc_id": "doc_084",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.6472,
+      "twostage_latency": 1.6998
+    },
+    {
+      "doc_id": "doc_085",
+      "type": "formula",
+      "baseline_cer": 2.791,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.6875,
+      "twostage_wer": 1.375,
+      "baseline_latency": 2.0702,
+      "twostage_latency": 2.4278
+    },
+    {
+      "doc_id": "doc_086",
+      "type": "formula",
+      "baseline_cer": 4.3043,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.802,
+      "twostage_latency": 1.7125
+    },
+    {
+      "doc_id": "doc_087",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 1.9503,
+      "twostage_latency": 2.1397
+    },
+    {
+      "doc_id": "doc_088",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.8558,
+      "twostage_latency": 1.6918
+    },
+    {
+      "doc_id": "doc_089",
+      "type": "formula",
+      "baseline_cer": 2.791,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.6875,
+      "twostage_wer": 1.375,
+      "baseline_latency": 1.8113,
+      "twostage_latency": 1.8939
+    },
+    {
+      "doc_id": "doc_090",
+      "type": "formula",
+      "baseline_cer": 4.3261,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.8501,
+      "twostage_latency": 1.9459
+    },
+    {
+      "doc_id": "doc_091",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 1.9802,
+      "twostage_latency": 1.7148
+    },
+    {
+      "doc_id": "doc_092",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.7608,
+      "twostage_latency": 2.2863
+    },
+    {
+      "doc_id": "doc_093",
+      "type": "formula",
+      "baseline_cer": 2.791,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.6875,
+      "twostage_wer": 1.375,
+      "baseline_latency": 1.924,
+      "twostage_latency": 1.9239
+    },
+    {
+      "doc_id": "doc_094",
+      "type": "formula",
+      "baseline_cer": 4.3043,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.9354,
+      "twostage_latency": 1.9174
+    },
+    {
+      "doc_id": "doc_095",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 2.0134,
+      "twostage_latency": 1.773
+    },
+    {
+      "doc_id": "doc_096",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.8136,
+      "twostage_latency": 2.1072
+    },
+    {
+      "doc_id": "doc_097",
+      "type": "formula",
+      "baseline_cer": 2.7463,
+      "twostage_cer": 2.8507,
+      "baseline_wer": 0.5,
+      "twostage_wer": 1.375,
+      "baseline_latency": 1.914,
+      "twostage_latency": 1.8816
+    },
+    {
+      "doc_id": "doc_098",
+      "type": "formula",
+      "baseline_cer": 4.3043,
+      "twostage_cer": 4.4565,
+      "baseline_wer": 1.25,
+      "twostage_wer": 1.9167,
+      "baseline_latency": 1.9384,
+      "twostage_latency": 1.8717
+    },
+    {
+      "doc_id": "doc_099",
+      "type": "formula",
+      "baseline_cer": 2.6154,
+      "twostage_cer": 2.6154,
+      "baseline_wer": 1.125,
+      "twostage_wer": 1.25,
+      "baseline_latency": 2.034,
+      "twostage_latency": 2.0054
+    },
+    {
+      "doc_id": "doc_100",
+      "type": "formula",
+      "baseline_cer": 4.3409,
+      "twostage_cer": 4.5682,
+      "baseline_wer": 1.1818,
+      "twostage_wer": 1.8182,
+      "baseline_latency": 1.8898,
+      "twostage_latency": 1.8838
+    }
+  ]
+}

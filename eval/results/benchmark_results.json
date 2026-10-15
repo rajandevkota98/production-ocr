@@ -1,0 +1,116 @@
+{
+  "timestamp": "2026-10-15T06:54:30Z",
+  "cases": [
+    {
+      "id": "01_multicolumn_doc.png",
+      "name": "Multi-Column Academic Paper",
+      "type": "multi_column",
+      "baseline": {
+        "latency_sec": 2.8246,
+        "cer": 0.5177,
+        "wer": 0.6953,
+        "extracted_text_preview": "EmpiricalEvaluationofDocumentUnderstandingArchitectures\n1.Introduction&Motivation\n2.Two-StageVisionPipeline\nDeep visual document understanding requires robust layout awareness.\nTraditional single-shot OCR systems scan text lines strictly horizontally.\nStage 1 utilizes PP-DocLayoutV3 to detect column..."
+      },
+      "twostage": {
+        "latency_sec": 2.5343,
+        "cer": 0.0031,
+        "wer": 0.0234,
+        "extracted_text_preview": "Empirical Evaluation of Document Understanding Architectures\n\n1. Introduction & Motivation\n\nDeep visual document understanding requires robust layout awareness.\n\nTraditional single-shot OCR systems scan text lines strictly horizontally.\nOn mutti-column layouts, horizontal scans interleave distinct c..."
+      },
+      "special_metrics": {
+        "baseline_reading_order": {
+          "kendall_tau": 0.6,
+          "inversions": 3,
+          "total_pairs": 15,
+          "reading_order_accuracy": 80.0
+        },
+        "twostage_reading_order": {
+          "kendall_tau": 1.0,
+          "inversions": 0,
+          "total_pairs": 66,
+          "reading_order_accuracy": 100.0
+        }
+      }
+    },
+    {
+      "id": "02_financial_table.png",
+      "name": "Borderless Financial Statement Table",
+      "type": "table",
+      "baseline": {
+        "latency_sec": 1.7061,
+        "cer": 0.4678,
+        "wer": 0.1731,
+        "extracted_text_preview": "Q2ConsolidatedFinancialSummary\nFinancial metrics reported in Millions USD (unaudited)\nFinancial Metric\nQ1 2024 ($M)\nQ2 2024 ($M)\nYoY Growth (%)\nCloud Infrastructure\n$142.5\n$189.2\n+32.8%\nEnterprise Al Licensing\n$88.4\n$124.1\n+40.4%\nProfessional Services\n$34.1\n$39.5\n+15.8%\nOperating Expenses\n$64.2\n$71...."
+      },
+      "twostage": {
+        "latency_sec": 2.3666,
+        "cer": 0.4795,
+        "wer": 0.2692,
+        "extracted_text_preview": "Q2 Consolidated Financial Summary\n\nFinancial metrics reported in Millions USD (unaudited)\n\nFinancial Metric Q1 2024 ($M) Q2 2024 ($M) YoY Growth (%)\nCloud Infrastructure $142.5 $189.2 +32.8%\nEnterprise Al Licensing $88.4 $124.1 +40.4%\nProfessional Services $34.1 $39.5 +15.8%\nOperating Expenses $64.2..."
+      },
+      "special_metrics": {
+        "baseline_table": {
+          "is_markdown_table": false,
+          "cells_total": 24,
+          "cells_detected": 23,
+          "cell_recall": 0.958,
+          "table_structure_score": 0.239
+        },
+        "twostage_table": {
+          "is_markdown_table": false,
+          "cells_total": 24,
+          "cells_detected": 22,
+          "cell_recall": 0.917,
+          "table_structure_score": 0.229
+        }
+      }
+    },
+    {
+      "id": "03_scientific_formula.png",
+      "name": "Scientific Formula & Equation Document",
+      "type": "formula",
+      "baseline": {
+        "latency_sec": 2.5415,
+        "cer": 0.9275,
+        "wer": 0.907,
+        "extracted_text_preview": "StatisticalLossFormulation\n1.NormalizedobjectiveFunction\nTheregularizedempiricalriskminimizationproblemisformulatedasfollows:\n+((x))}=}(/\uff09=()\n2.GaussianProbabilityDensity\n\uff08u\uffe5\uff09/\u4e59\uff08nu-x\uff09-\uff09dx\uffe5\uff08\uff08\uff08d\uffe5\uff09bs\uffe5us\uff09/\uff09=\uff08usn\u4e28x)d..."
+      },
+      "twostage": {
+        "latency_sec": 2.1143,
+        "cer": 1.285,
+        "wer": 0.8837,
+        "extracted_text_preview": "Statistical Loss Formulation\n\n1. Normalized Objective Function\n\nThe regularized empirical risk minimization problem is formulated as follows:\n\ni) + lambda * | |theta||_2*2\n\nL(theta) = (1 / N) * sum_{i=1}*{N} Lce(\u00a3(s_i; theta), y.\n\n2. Gaussian Probability Density\n\np(x | mu, sigma*2) = (1 / (sigma * s..."
+      },
+      "special_metrics": {
+        "baseline_formula": {
+          "has_latex": false,
+          "terms_detected": 2,
+          "terms_total": 8,
+          "term_accuracy": 0.25,
+          "formula_fidelity_score": 0.2
+        },
+        "twostage_formula": {
+          "has_latex": false,
+          "terms_detected": 8,
+          "terms_total": 8,
+          "term_accuracy": 1.0,
+          "formula_fidelity_score": 0.5
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "baseline_avg_cer": 0.6377,
+    "twostage_avg_cer": 0.5892,
+    "cer_reduction_percent": 7.6,
+    "baseline_avg_wer": 0.5918,
+    "twostage_avg_wer": 0.3921,
+    "baseline_avg_latency_sec": 2.36,
+    "twostage_avg_latency_sec": 2.34,
+    "cost_per_1k_pages": {
+      "commercial_ocr_apis (AWS/Google)": "$15.00 - $50.00",
+      "single_stage_paddleocr (CPU self-host)": "$0.80 - $1.10",
+      "twostage_serverless_vdu (Modal T4+A10G)": "$0.75 - $1.20"
+    }
+  }
+}
