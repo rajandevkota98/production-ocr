@@ -19,7 +19,7 @@ flowchart TD
     subgraph ModalGPUTier ["Modal Serverless GPU Tier ($30/mo Free Credit)"]
         Layout["3. Stage 1: Layout Worker (Modal T4 GPU)\n• PP-DocLayoutV3 Segmentation\n• Bounding Box Cropping & Prompt Routing\n• Scale-to-zero in 60s"]
         
-        VLLM["4. Stage 2: Generative SLM (Modal A10G / A100 GPU)\n• Qwen 3.5 (4B / 2B) via vLLM\n• Continuous Batching & Chunked Prefill\n• Scale-to-zero in 120s"]
+        VLLM["4. Stage 2: Generative SLM (Modal A10G GPU)\n• Qwen2-VL-2B-Instruct via vLLM\n• Continuous Batching & Prompt Specialization\n• Scale-to-zero in 120s"]
     end
     
     Gateway -->|Dispatch Job via Webhook / SDK| Layout
