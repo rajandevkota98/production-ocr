@@ -1,0 +1,16 @@
+# Production OCR Worker Configuration
+
+worker:
+  max_batch_size: 4
+  batch_window_ms: 100
+  redis_queue: "ocr_tasks"
+  shm_directory: "/dev/shm"
+
+modal:
+  endpoint_url: "" # Populated with deployed Modal process_document webhook
+
+pipeline:
+  layout_threshold: 0.3
+  pdf_dpi: 150
+  max_tokens: 8192
+  temperature: 0.0
