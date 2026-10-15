@@ -1,4 +1,4 @@
-# 🤖 Production OCR Platform — Agent Instructions & Architectural Memory
+# Production OCR Platform — Agent Instructions & Architectural Memory
 
 Welcome, Agent. This repository contains the ground-up implementation of a **Production-Grade, Self-Scaling Visual Document Understanding (VDU) & OCR Pipeline**.
 
@@ -6,117 +6,65 @@ Whenever you work in this workspace, follow the instructions, architecture rules
 
 ---
 
-## 🏛️ System Architecture
+## 1. System Architecture: 100% Cloud (Zero Credit Card Required)
 
-The platform decouples ingestion, queue state, layout segmentation, and generative language model recognition into distinct, independently scalable tiers:
+The platform decouples ingestion, queue state, layout segmentation, and generative language model recognition into distinct, independently scalable cloud tiers requiring zero local hardware and zero credit card verification:
 
 ```mermaid
 flowchart TD
-    Client(["Client / AI Agent / Claude Code"]) -->|POST /process (PDF or Image)| Gateway["1. Ingestion Gateway (Rust Axum)\n• 10MB limit enforcement\n• Multipart parsing\n• Base64 encoding\n• Atomic HSET + LPUSH"]
+    Client(["Client / AI Agent / Web User"]) -->|POST /process (PDF or Image)| Gateway["1. Ingestion Gateway (Hugging Face Spaces)\n• 2 vCPUs, 16 GB RAM (Free Tier - No Card)\n• Docker container on port 7860\n• Request validation & Base64 encoding"]
     
-    Gateway --> Redis[("2. State & Task Store (Redis)\n• Hash task:{task_id}\n• List ocr_tasks")]
+    Gateway --> Redis[("2. State & Task Store (Upstash Redis)\n• Free 10,000 commands/day\n• Hash task:{task_id}\n• List ocr_tasks")]
     
-    subgraph LayoutWorkerTier ["Layout Worker Tier (NVIDIA T4 / GPU)"]
-        Worker["3. Consumer Worker (Python)\n• Dynamic Batch Collector (100ms window, max 4)\n• Zero-Copy RAM Disk (/dev/shm)\n• PP-DocLayoutV3 Segmentation\n• Bounding Box Cropping & Prompt Routing"]
+    subgraph ModalGPUTier ["Modal Serverless GPU Tier ($30/mo Free Credit)"]
+        Layout["3. Stage 1: Layout Worker (Modal T4 GPU)\n• PP-DocLayoutV3 Segmentation\n• Bounding Box Cropping & Prompt Routing\n• Scale-to-zero in 60s"]
+        
+        VLLM["4. Stage 2: Generative SLM (Modal A10G / A100 GPU)\n• Qwen 3.5 (4B / 2B) via vLLM\n• Continuous Batching & Chunked Prefill\n• Scale-to-zero in 120s"]
     end
     
-    Redis -->|BRPOP / RPOP FIFO| Worker
-    
-    subgraph VLLMInferenceTier ["Generative Inference Tier (NVIDIA A100 / GPU)"]
-        vLLM["4. vLLM Inference Server\n• Qwen 3.5 (4B / 2B)\n• Continuous Batching (MAX_NUM_SEQS=512)\n• Chunked Prefill (MAX_NUM_BATCHED_TOKENS=262144)\n• Multi-Token Prediction (MTP)"]
-    end
-    
-    Worker -->|POST /v1/chat/completions| vLLM
-    vLLM -->|Text / Table / Formula / Chart desc| Worker
-    Worker -->|HSET status=done, result=JSON, data=''| Redis
+    Gateway -->|Dispatch Job via Webhook / SDK| Layout
+    Layout -->|Image crops + prompts| VLLM
+    VLLM -->|Recognized text, tables, formulas| Layout
+    Layout -->|Result JSON + Markdown| Redis
     
     Client -->|GET /status/{task_id}| Gateway
     Gateway -->|HGETALL task:{task_id}| Redis
-    
-    subgraph AgentIntegration ["Agentic Tooling"]
-        MCP["5. FastMCP Server\n• @mcp.tool parse_document()\n• Workspace boundary path check\n• Stdio & SSE transports"]
-    end
-    MCP --> Gateway
 ```
 
 ---
 
-## 📜 Key Architectural Directives & Rules
+## 2. Component Specifications
 
-### 1. Ingestion Gateway (Rust + Axum)
-- **Path**: `gateway/`
-- **Responsibilities**:
-  - Expose `POST /process`, `GET /status/:task_id`, and `GET /health`.
-  - Enforce a 10MB upload limit using `tower_http::limit::RequestBodyLimitLayer`.
-  - Generate UUID v4 `task_id` for each request.
-  - Write state atomically to Redis using a single `HSET` command:
-    - Key: `task:{task_id}`
-    - Fields: `status: "queued"`, `filename`, `extension`, `data: <base64>`
-  - Push `task_id` to Redis list `ocr_tasks` using `LPUSH`.
-  - Return HTTP `202 Accepted` with JSON `{ "task_id": "...", "status": "queued" }`.
-  - Return task status with HTTP `200` from `GET /status/:task_id` parsing the Redis `result` field.
+### A. Ingestion Gateway (Hugging Face Spaces)
+- **Path**: `deploy/hf_spaces/` and `gateway/`
+- **Host**: Hugging Face Spaces (Docker SDK).
+- **Resources**: 2 vCPUs, 16 GB RAM (Free, 24/7, No Card Required).
+- **Port**: Strictly listens on port `7860` as required by Hugging Face Spaces.
+- **Endpoints**:
+  - `POST /process`: Validates upload, stores in Redis, triggers Modal execution.
+  - `GET /status/:task_id`: Queries task state and returns structured Markdown.
+  - `GET /health`: Health probe.
 
-### 2. State & Buffer Store (Redis)
-- **Host**: Configurable via `REDIS_HOST` (default `ocr-redis-service` or `localhost`).
-- **Port**: `REDIS_PORT` (default `6379`).
+### B. State & Buffer Store (Upstash Redis)
+- **Host**: Configurable via `REDIS_URL` (Upstash serverless Redis `rediss://default:...@...upstash.io:6379`).
 - **Data Structures**:
-  - `task:{task_id}`: Hash containing task metadata, status, payload, and finished result.
-  - `ocr_tasks`: List acting as the FIFO queue (`LPUSH` on ingestion, `BRPOP` + `RPOP` on worker consumption).
+  - `task:{task_id}`: Hash storing task status (`"queued"`, `"processing"`, `"done"`, `"failed"`), input metadata, and final JSON output.
+  - `ocr_tasks`: FIFO task queue.
 
-### 3. Asynchronous Consumer Worker (Python + GLM-OCR / PP-DocLayoutV3)
-- **Path**: `worker/`
-- **Dynamic Batch Collector**:
-  - Block on queue using `brpop("ocr_tasks", timeout=2)`.
-  - Once a task arrives, wait up to `BATCH_WINDOW_MS=100` ms to collect up to `MAX_BATCH_SIZE=4` tasks using `rpop` to preserve strict FIFO ordering.
-- **Zero-Copy RAM Handoff**:
-  - Decode Base64 payloads directly into `/dev/shm/{task_id}.{ext}`.
-  - Apply `os.chmod(temp_path, 0o644)` to ensure child processes can read the shared memory buffer.
-- **Layout Segmentation**:
-  - Run `PP-DocLayoutV3` over the batch.
-  - Segment document into semantic regions: `text`, `table`, `formula`, `chart`.
-  - Abandon non-content regions (headers, footers, page numbers) to avoid context pollution.
-  - Map each region to its specialized prompt.
-- **Cleanup**:
-  - Update Redis with `status="done"` and the structured JSON/Markdown result.
-  - Clear the large Base64 `data` string from Redis to prevent memory bloat.
-  - Delete temporary files in `/dev/shm/` inside a `finally` block.
-
-### 4. Generative Inference Engine (vLLM)
-- **Path**: `server/` or `inference/`
-- **Model**: `Qwen/Qwen3.5-4B` (or `Qwen/Qwen3.5-2B` for lighter hardware).
-- **Critical vLLM Launch Parameters**:
-  ```bash
-  vllm serve "$MODEL_PATH" \
-    --served-model-name "$SERVED_NAME" \
-    --port 8000 \
-    --gpu-memory-utilization 0.9 \
-    --max-model-len 16384 \
-    --max-num-batched-tokens 262144 \
-    --max-num-seqs 512 \
-    --limit-mm-per-prompt '{"image":1, "video":0}' \
-    --mm-encoder-tp-mode data \
-    --load-format instanttensor \
-    --reasoning-parser qwen3 \
-    --default-chat-template-kwargs '{"enable_thinking": false}' \
-    --enable-chunked-prefill
-  ```
-  - `MAX_NUM_BATCHED_TOKENS=262144`: Crucial for handling multi-crop document batches without prefill choking.
-  - `MAX_MODEL_LEN=16384`: Optimal balance for 6k vision tokens + 8k generation tokens.
-
-### 5. Agentic MCP Integration (FastMCP)
-- **Path**: `mcp/`
-- Expose `@mcp.tool() parse_document(file_path: str, include_layout: bool = False)`.
-- Enforce strict workspace confinement (`path.is_relative_to(WORKSPACE)`) to prevent path traversal vulnerabilities.
-- Support both `stdio` and `sse` transport mechanisms.
-
-### 6. Event-Driven Autoscaling (KEDA)
-- **Worker Scaler**: Scale on Redis list length `ocr_tasks` (`threshold = 1`) + cron warm-start during business hours.
-- **vLLM Scaler**: Scale on Prometheus metric `vllm:num_requests_waiting` (`threshold = 1`).
-- **API Scaler**: Scale on CPU utilization (`> 70%`).
+### C. Layout & Inference Tier (Modal)
+- **Path**: `inference/modal_app.py`
+- **Modal App**: `modal.App("production-ocr")`
+- **Volume**: `modal.Volume.from_name("ocr-models")` stores `PaddlePaddle/PP-DocLayoutV3` and `Qwen/Qwen3.5-4B` weights.
+- **Stage 1 (Layout)**:
+  - GPU: `T4` (lightweight, scale-to-zero after 60s idle).
+  - Identifies bounding boxes, reading order, and semantic categories.
+- **Stage 2 (Generative SLM)**:
+  - GPU: `A10G` or `A100` (scale-to-zero after 120s idle).
+  - Transcribes text, tables (Markdown), and formulas (LaTeX).
 
 ---
 
-## 🗂️ Target Repository Structure
+## 3. Directory Structure
 
 ```text
 /home/rajandevkota/projects/production-ocr/
@@ -125,51 +73,32 @@ flowchart TD
 │       └── ocr-pipeline-specs.md
 ├── AGENTS.md
 ├── GEMINI.md
-├── Makefile
-├── docker-compose.yml
-├── gateway/                 # Rust Axum Producer API Gateway
-│   ├── Cargo.toml
-│   ├── Dockerfile
-│   └── src/
-│       └── main.rs
-├── worker/                  # Python Dynamic Batching Consumer
-│   ├── Dockerfile
-│   ├── config.yaml
+├── .gitignore
+├── deploy/
+│   └── hf_spaces/           # Hugging Face Spaces deployment configuration
+│       ├── Dockerfile
+│       └── README.md
+├── gateway/                 # Ingestion Gateway (FastAPI / Rust)
+│   ├── app.py
 │   ├── requirements.txt
-│   └── worker.py
-├── inference/               # vLLM Model Serving Configuration
-│   ├── Dockerfile
-│   ├── entrypoint.sh
+│   ├── sources/
+│   └── services/
+├── inference/               # Modal GPU Functions & Model Serving
+│   ├── modal_app.py
 │   └── requirements.txt
-├── mcp/                     # FastMCP Server for AI Agents
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── server.py
-├── deploy/                  # Kubernetes (AKS / GKE) & Terraform
-│   ├── k8s/
-│   │   ├── apps/
-│   │   └── keda/
-│   └── terraform/
 └── tests/
     └── test_pipeline.py
 ```
 
 ---
 
-## 🛠️ Ground-Up Development Roadmap
+## 4. Operational Runbook
 
-1. **Phase 1: Local Docker Compose Stack**
-   - Stand up Redis.
-   - Build & run the Rust Gateway (`gateway/`).
-   - Wire mock or containerized inference worker.
-2. **Phase 2: Worker & Layout Pipeline**
-   - Implement `worker.py` with dynamic collector (`100ms` window, `max 4`).
-   - Implement `/dev/shm` zero-copy transfer.
-   - Configure GLM-OCR SDK / PP-DocLayoutV3 with prompt mappings.
-3. **Phase 3: vLLM Inference Container**
-   - Build optimized `entrypoint.sh` with chunked prefill and token settings.
-   - Connect worker HTTP requests to vLLM `/v1/chat/completions`.
-4. **Phase 4: FastMCP Agent Tool**
-   - Create MCP tool for Claude Code & Antigravity CLI.
-5. **Phase 5: Cloud Deployment & KEDA Scaling**
-   - Deploy onto Kubernetes (AKS / GKE) with node taints for T4 and A100 GPUs.
+### Deploying to Hugging Face Spaces
+1. Create a Space at `huggingface.co/new-space` with Docker SDK (Blank template).
+2. Set Space secret `MODAL_API_URL` and `REDIS_URL`.
+3. Push `deploy/hf_spaces/` contents or set Space repo as git remote and push.
+
+### Deploying to Modal
+1. Authenticate Modal CLI: `modal setup`.
+2. Deploy the serverless app: `modal deploy inference/modal_app.py`.
