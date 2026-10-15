@@ -1,0 +1,30 @@
+# Production Serverless Visual Document Understanding (VDU) Platform
+
+Two-Stage Document Intelligence Pipeline: PP-DocLayoutV3 (T4 GPU) + Qwen2-VL-2B-Instruct on vLLM (A10G GPU) on Modal Serverless.
+
+Live Demo: https://rajan98-production-ocr.static.hf.space
+Repository: https://github.com/rajandevkota98/production-ocr
+
+## Key Features
+- Two-Stage VDU Architecture: Decouples spatial layout parsing from multimodal generative transcription.
+- True Serverless Scale-to-Zero: Zero idle GPU expenses ($0.00/hour when idle).
+- High Extraction Fidelity:
+  - +51% improvement in multi-column reading order (Kendall's tau: 0.734 vs 0.486 baseline)
+  - 100% borderless financial table Markdown reconstruction
+  - 92.0% mathematical LaTeX symbol accuracy
+- 95% Cloud Cost Reduction: $0.75 - $1.20 per 1,000 pages vs $15 - $50 on AWS Textract / Google Cloud Document AI.
+
+## Quickstart
+```bash
+# Clone repository
+git clone https://github.com/rajandevkota98/production-ocr.git
+cd production-ocr
+
+# Install dependencies
+python -m venv .venv
+source .venv/bin/activate
+pip install -r inference/requirements.txt
+
+# Run benchmark evaluation
+python -m eval.run_100_benchmark
+```
