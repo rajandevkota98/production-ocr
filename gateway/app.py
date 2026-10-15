@@ -2,7 +2,7 @@ import os
 import uuid
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, UploadFile, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 
 from gateway.services.logger import get_logger
@@ -43,9 +43,18 @@ async def custom_exception_handler(request: Request, exc: OcrPlatformException):
         content={"error": exc.message, "status_code": exc.status_code},
     )
 
+TEMPLATES_DIR = pathlib.Path(__file__).parent / "templates"
+
 class ProcessResponse(BaseModel):
     task_id: str
     status: str
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_demo_ui():
+    html_file = TEMPLATES_DIR / "index.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Production OCR Gateway</h1><p>Demo UI template not found.</p>")
 
 @app.post("/process", status_code=202, response_model=ProcessResponse)
 async def submit_document(file: UploadFile = File(...)):
