@@ -52,7 +52,7 @@ class BenchmarkRunner:
         """
         Executes Two-Stage Layout-First VDU Pipeline via Modal cloud endpoint.
         Stage 1: PP-DocLayoutV3 detects semantic blocks (columns, tables, formulas).
-        Stage 2: Generative SLM (Qwen 3.5) transcribes structured Markdown.
+        Stage 2: Generative SLM (Qwen2-VL-2B-Instruct on vLLM) transcribes structured Markdown.
         """
         start_time = time.time()
         with open(img_path, "rb") as f:
